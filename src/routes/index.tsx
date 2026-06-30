@@ -12,7 +12,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "BaayuLok — Every Hand Helps" },
-      { name: "description", content: "Nepal's verified community crowdfunding platform for medical, education and disaster relief." },
+      { name: "description", content: "Nepal's verified medical crowdfunding platform — fund surgeries, cancer care, emergencies and treatment for families who need it most." },
       { property: "og:title", content: "BaayuLok — Every Hand Helps" },
       { property: "og:description", content: "Start or support verified causes across Nepal." },
     ],
@@ -87,7 +87,7 @@ function Hero() {
 }
 
 function OrbitGraphic() {
-  const nodes = ["🩺", "🎓", "⛑️", "🐾", "🤝", "🕊️"];
+  const nodes = ["🫀", "🎗️", "🚑", "🍼", "🧸", "💊"];
   return (
     <div className="relative mx-auto aspect-square w-full max-w-md">
       <motion.div
@@ -122,7 +122,7 @@ function OrbitGraphic() {
 }
 
 function Featured() {
-  const tabs = ["All", "Medical", "Education", "Disaster Relief", "Community"] as const;
+  const tabs = ["All", "Surgery", "Cancer Care", "Emergency Care", "Chronic Illness"] as const;
   const [tab, setTab] = useState<typeof tabs[number]>("All");
   const list = tab === "All" ? campaigns : campaigns.filter((c) => c.category === tab);
   return (

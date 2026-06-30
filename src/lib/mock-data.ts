@@ -1,24 +1,25 @@
 import medical from "@/assets/campaign-medical.jpg";
-import education from "@/assets/campaign-education.jpg";
-import disaster from "@/assets/campaign-disaster.jpg";
+import dialysis from "@/assets/campaign-dialysis.png";
+import icu from "@/assets/campaign-icu.png";
+import maternity from "@/assets/campaign-maternity.png";
 
 export type Category =
-  | "Medical"
-  | "Education"
-  | "Disaster Relief"
-  | "Animals"
-  | "Community"
-  | "Sports"
-  | "Memorial";
+  | "Surgery"
+  | "Cancer Care"
+  | "Emergency Care"
+  | "Maternity & Newborn"
+  | "Child Health"
+  | "Chronic Illness"
+  | "Transplant";
 
 export const categories: { name: Category; emoji: string; count: number }[] = [
-  { name: "Medical", emoji: "🩺", count: 124 },
-  { name: "Education", emoji: "🎓", count: 86 },
-  { name: "Disaster Relief", emoji: "⛑️", count: 41 },
-  { name: "Animals", emoji: "🐾", count: 22 },
-  { name: "Community", emoji: "🤝", count: 58 },
-  { name: "Sports", emoji: "⚽", count: 17 },
-  { name: "Memorial", emoji: "🕊️", count: 12 },
+  { name: "Surgery", emoji: "🫀", count: 64 },
+  { name: "Cancer Care", emoji: "🎗️", count: 48 },
+  { name: "Emergency Care", emoji: "🚑", count: 39 },
+  { name: "Maternity & Newborn", emoji: "🍼", count: 27 },
+  { name: "Child Health", emoji: "🧸", count: 33 },
+  { name: "Chronic Illness", emoji: "💊", count: 41 },
+  { name: "Transplant", emoji: "🩸", count: 18 },
 ];
 
 export type Campaign = {
@@ -40,7 +41,7 @@ export const campaigns: Campaign[] = [
   {
     slug: "save-aarav-heart-surgery",
     title: "Help 6-year-old Aarav get life-saving heart surgery",
-    category: "Medical",
+    category: "Surgery",
     cover: medical,
     goal: 1500000,
     raised: 968400,
@@ -53,39 +54,39 @@ export const campaigns: Campaign[] = [
     verified: true,
   },
   {
-    slug: "books-for-jumla-school",
-    title: "Books and benches for 200 students in Jumla",
-    category: "Education",
-    cover: education,
+    slug: "dialysis-support-for-kamala",
+    title: "Ongoing dialysis for Kamala — chronic kidney failure",
+    category: "Chronic Illness",
+    cover: dialysis,
     goal: 450000,
     raised: 312500,
     donors: 188,
     daysLeft: 32,
     location: "Jumla",
-    beneficiary: "Saraswati Primary School",
+    beneficiary: "Kamala Bohara",
     story:
-      "Saraswati Primary has 200 students sharing 40 textbooks. We are raising funds for a full classroom library and 30 new wooden benches built by local carpenters.",
+      "Kamala, 58, needs dialysis three times a week after both her kidneys failed. Each session costs more than her family earns in a week. We are raising funds for six months of treatment at Karnali Academy of Health Sciences.",
     verified: true,
   },
   {
-    slug: "rebuild-sindhupalchok-homes",
-    title: "Rebuild 12 homes destroyed by Sindhupalchok landslide",
-    category: "Disaster Relief",
-    cover: disaster,
+    slug: "trauma-icu-care-bishal",
+    title: "ICU care for Bishal after a highway accident",
+    category: "Emergency Care",
+    cover: icu,
     goal: 2200000,
     raised: 745000,
     donors: 256,
     daysLeft: 45,
     location: "Sindhupalchok",
-    beneficiary: "Melamchi Ward 4 families",
+    beneficiary: "Bishal Magar",
     story:
-      "The August monsoon triggered a landslide that wiped out twelve homes in our ward. Families are sheltering in a school. We need NPR 22 lakh to rebuild simple, safe houses before winter.",
+      "Bishal, a 24-year-old electrician, suffered severe head and chest trauma in a bus accident. He is on ventilator support in the ICU. The family needs NPR 22 lakh to cover surgery and weeks of intensive care.",
     verified: true,
   },
   {
     slug: "cancer-treatment-sita",
     title: "Sita's chemotherapy — Stage 2 breast cancer",
-    category: "Medical",
+    category: "Cancer Care",
     cover: medical,
     goal: 800000,
     raised: 240000,
@@ -98,33 +99,33 @@ export const campaigns: Campaign[] = [
     verified: false,
   },
   {
-    slug: "scholarship-meera-engineering",
-    title: "Send Meera to engineering college",
-    category: "Education",
-    cover: education,
+    slug: "nicu-care-for-baby-meera",
+    title: "NICU care for premature baby Meera",
+    category: "Maternity & Newborn",
+    cover: maternity,
     goal: 350000,
     raised: 280000,
     donors: 134,
     daysLeft: 12,
     location: "Biratnagar",
-    beneficiary: "Meera Tamang",
+    beneficiary: "Baby Meera Tamang",
     story:
-      "Meera scored in the top 1% of the IOE entrance. Her father, a daily-wage worker, cannot afford the 4-year tuition at Pulchowk Engineering Campus.",
+      "Born at just 29 weeks, baby Meera needs at least three more weeks in the neonatal intensive care unit. Her father, a daily-wage worker, cannot afford the incubator and specialist care costs.",
     verified: true,
   },
   {
-    slug: "winter-blankets-mustang",
-    title: "1,000 winter blankets for Upper Mustang families",
-    category: "Community",
-    cover: disaster,
+    slug: "liver-transplant-for-dorje",
+    title: "Liver transplant for Dorje — end-stage liver disease",
+    category: "Transplant",
+    cover: icu,
     goal: 600000,
     raised: 410000,
     donors: 302,
     daysLeft: 22,
     location: "Mustang",
-    beneficiary: "Lo Manthang community",
+    beneficiary: "Dorje Lama",
     story:
-      "Winters in Upper Mustang drop to -20°C. We are distributing 1,000 thick wool blankets sourced from a local weaver cooperative.",
+      "Dorje, 46, has end-stage liver disease and his doctors have approved a living-donor liver transplant. His sister is a matched donor. We are raising funds for the surgery and post-operative medication.",
     verified: true,
   },
 ];

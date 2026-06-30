@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { campaigns, formatNpr } from "@/lib/mock-data";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { FileUpload, type UploadedFile } from "@/components/site/file-upload";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — BaayuLok" }] }),
@@ -55,12 +57,24 @@ function Page() {
           ))}
         </div>
       </section>
-      <section className="rounded-2xl border border-border bg-card p-6">
-        <h2 className="font-display text-xl font-bold">KYC status</h2>
-        <p className="mt-2 text-sm text-muted-foreground">Your documents are verified. You can launch new campaigns instantly.</p>
-        <Button variant="outline" className="mt-3">Re-upload documents</Button>
-      </section>
+      <KycSection />
     </div>
+  );
+}
+
+function KycSection() {
+  const [docs, setDocs] = useState<UploadedFile[]>([]);
+  return (
+    <section className="rounded-2xl border border-border bg-card p-6">
+      <h2 className="font-display text-xl font-bold">KYC status</h2>
+      <p className="mt-2 text-sm text-muted-foreground">Your documents are verified. Re-upload updated medical documents below if anything has changed.</p>
+      <div className="mt-4 max-w-lg">
+        <FileUpload kind="document" multiple files={docs} onChange={setDocs} hint="Citizenship, hospital letters or medical bills · PDF, DOC, JPG, PNG" />
+      </div>
+      {docs.length > 0 && (
+        <Button className="mt-4">Submit {docs.length} document{docs.length === 1 ? "" : "s"} for re-verification</Button>
+      )}
+    </section>
   );
 }
 
