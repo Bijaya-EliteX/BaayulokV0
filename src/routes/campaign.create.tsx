@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Check } from "lucide-react";
 import { FileUpload, type UploadedFile } from "@/components/site/file-upload";
 import { categories } from "@/lib/mock-data";
+import { nepalProvinces } from "@/lib/nepal-locations";
 
 export const Route = createFileRoute("/campaign/create")({
   head: () => ({ meta: [{ title: "Start a Campaign — BaayuLok" }] }),
@@ -22,6 +23,10 @@ function Page() {
   const [citizenship, setCitizenship] = useState<UploadedFile[]>([]);
   const [hospitalLetter, setHospitalLetter] = useState<UploadedFile[]>([]);
   const [medicalBills, setMedicalBills] = useState<UploadedFile[]>([]);
+  const [province, setProvince] = useState("");
+  const [district, setDistrict] = useState("");
+
+  const districts = nepalProvinces.find((p) => p.name === province)?.districts ?? [];
 
   const totalDocs = citizenship.length + hospitalLetter.length + medicalBills.length;
 
@@ -52,7 +57,29 @@ function Page() {
             </select>
           </Field>
           <Field label="Goal (NPR)"><Input type="number" placeholder="500000" /></Field>
-          <Field label="Location"><Input placeholder="District, Province" /></Field>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Field label="Province">
+              <select
+                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                value={province}
+                onChange={(e) => { setProvince(e.target.value); setDistrict(""); }}
+              >
+                <option value="" disabled>Select province</option>
+                {nepalProvinces.map((p) => <option key={p.name} value={p.name}>{p.name}</option>)}
+              </select>
+            </Field>
+            <Field label="District">
+              <select
+                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+                value={district}
+                onChange={(e) => setDistrict(e.target.value)}
+                disabled={!province}
+              >
+                <option value="" disabled>{province ? "Select district" : "Select province first"}</option>
+                {districts.map((d) => <option key={d} value={d}>{d}</option>)}
+              </select>
+            </Field>
+          </div>
         </>}
         {step === 1 && <>
           <Field label="Your story"><Textarea rows={8} placeholder="Tell donors who you're raising for, their diagnosis, and the treatment needed…" /></Field>
