@@ -102,11 +102,11 @@ function Page() {
             ) : (
               <>
                 <Button size="lg" className="mt-6 w-full rounded-full" onClick={() => setModalOpen(true)}>Donate now</Button>
-                <Button size="lg" variant="outline" className="mt-2 w-full rounded-full"><Share2 className="mr-2 h-4 w-4" />Share campaign</Button>
+                {/* <Button size="lg" variant="outline" className="mt-2 w-full rounded-full"><Share2 className="mr-2 h-4 w-4" />Share campaign</Button> */}
               </>
             )}
             <div className="mt-6 rounded-xl bg-secondary p-4 text-xs text-muted-foreground">
-              Powered by <strong className="text-foreground">eSewa</strong> & <strong className="text-foreground">Khalti</strong>. Your donation is processed securely.
+              Powered by <strong className="text-foreground">eSewa</strong>. Your donation is processed securely.
             </div>
           </div>
         </aside>
