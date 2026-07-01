@@ -40,17 +40,17 @@ function Page() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 md:px-6">
-      <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name or location…" className="h-12 rounded-full pl-10" />
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative w-full shrink-0 md:w-48">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name or location…" className="h-12 rounded-full pl-10" />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {["All", ...categories.map(c => c.name)].map((c) => (
+              <button key={c} onClick={() => setCat(c)} className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition ${cat === c ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:border-primary/40"}`}>{c}</button>
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="mt-6 flex gap-2 overflow-x-auto pb-2">
-        {["All", ...categories.map(c => c.name)].map((c) => (
-          <button key={c} onClick={() => setCat(c)} className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition ${cat === c ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:border-primary/40"}`}>{c}</button>
-        ))}
-      </div>
       {loading ? (
         <div className="mt-20 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
       ) : (

@@ -6,8 +6,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { useAuthModal } from "@/hooks/use-auth-modal";
 
 const nav = [
+  { to: "/dashboard", label: "Dashboard" },
   { to: "/categories", label: "Donate" },
   { to: "/campaign/list", label: "Campaigns" },
+  { to: "/profile", label: "Profile" },
 ];
 
 export function SiteHeader() {
@@ -42,7 +44,6 @@ export function SiteHeader() {
         <div className="hidden items-center gap-2 md:flex">
           {user ? (
             <>
-              <Link to="/dashboard"><Button variant="ghost">Dashboard</Button></Link>
               {user.role === "Admin" && (
                 <Link to="/admin"><Button variant="ghost">Admin</Button></Link>
               )}
@@ -67,7 +68,6 @@ export function SiteHeader() {
             ))}
             {user ? (
               <>
-                <Link to="/dashboard" onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-sm hover:bg-secondary">Dashboard</Link>
                 {user.role === "Admin" && (
                   <Link to="/admin" onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-sm hover:bg-secondary">Admin</Link>
                 )}
