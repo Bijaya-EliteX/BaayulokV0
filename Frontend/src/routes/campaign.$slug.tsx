@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, ShieldCheck, Share2, Clock, Users, Heart, Loader2 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { DonationModal } from "@/components/site/donation-modal";
+import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/campaign/$slug")({
   beforeLoad: () => {
@@ -29,6 +30,8 @@ export const Route = createFileRoute("/campaign/$slug")({
 
 function Page() {
   const c = Route.useLoaderData() as CampaignData;
+  const { user } = useAuth();
+  const isAdmin = user?.role === "Admin";
   const [donors, setDonors] = useState<DonorInfo[]>([]);
   const [donorsLoading, setDonorsLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -92,8 +95,16 @@ function Page() {
               <Stat icon={Clock} label="Days left" value={c.daysLeft.toString()} />
               <Stat icon={ShieldCheck} label="Verified" value={c.verified ? "Yes" : "Pending"} />
             </div>
-            <Button size="lg" className="mt-6 w-full rounded-full" onClick={() => setModalOpen(true)}>Donate now</Button>
-            <Button size="lg" variant="outline" className="mt-2 w-full rounded-full"><Share2 className="mr-2 h-4 w-4" />Share campaign</Button>
+            {isAdmin ? (
+              <div className="mt-6 rounded-full bg-green-100 px-4 py-3 text-center font-semibold text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                Approved
+              </div>
+            ) : (
+              <>
+                <Button size="lg" className="mt-6 w-full rounded-full" onClick={() => setModalOpen(true)}>Donate now</Button>
+                <Button size="lg" variant="outline" className="mt-2 w-full rounded-full"><Share2 className="mr-2 h-4 w-4" />Share campaign</Button>
+              </>
+            )}
             <div className="mt-6 rounded-xl bg-secondary p-4 text-xs text-muted-foreground">
               Powered by <strong className="text-foreground">eSewa</strong> & <strong className="text-foreground">Khalti</strong>. Your donation is processed securely.
             </div>

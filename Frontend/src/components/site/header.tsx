@@ -8,7 +8,6 @@ import { useAuthModal } from "@/hooks/use-auth-modal";
 const nav = [
   { to: "/categories", label: "Donate" },
   { to: "/campaign/list", label: "Campaigns" },
-  { to: "/fundraise/tips-and-resources", label: "Resources" },
 ];
 
 export function SiteHeader() {

@@ -13,7 +13,6 @@ import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as FundraiseTipsAndResourcesRouteImport } from './routes/fundraise.tips-and-resources'
 import { Route as FundraiseHowItWorksRouteImport } from './routes/fundraise.how-it-works'
 import { Route as DonateSuccessRouteImport } from './routes/donate.success'
 import { Route as DonateFailureRouteImport } from './routes/donate.failure'
@@ -43,12 +42,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FundraiseTipsAndResourcesRoute =
-  FundraiseTipsAndResourcesRouteImport.update({
-    id: '/fundraise/tips-and-resources',
-    path: '/fundraise/tips-and-resources',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const FundraiseHowItWorksRoute = FundraiseHowItWorksRouteImport.update({
   id: '/fundraise/how-it-works',
   path: '/fundraise/how-it-works',
@@ -108,7 +101,6 @@ export interface FileRoutesByFullPath {
   '/donate/failure': typeof DonateFailureRoute
   '/donate/success': typeof DonateSuccessRoute
   '/fundraise/how-it-works': typeof FundraiseHowItWorksRoute
-  '/fundraise/tips-and-resources': typeof FundraiseTipsAndResourcesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -123,7 +115,6 @@ export interface FileRoutesByTo {
   '/donate/failure': typeof DonateFailureRoute
   '/donate/success': typeof DonateSuccessRoute
   '/fundraise/how-it-works': typeof FundraiseHowItWorksRoute
-  '/fundraise/tips-and-resources': typeof FundraiseTipsAndResourcesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -140,7 +131,6 @@ export interface FileRoutesById {
   '/donate/failure': typeof DonateFailureRoute
   '/donate/success': typeof DonateSuccessRoute
   '/fundraise/how-it-works': typeof FundraiseHowItWorksRoute
-  '/fundraise/tips-and-resources': typeof FundraiseTipsAndResourcesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -157,7 +147,6 @@ export interface FileRouteTypes {
     | '/donate/failure'
     | '/donate/success'
     | '/fundraise/how-it-works'
-    | '/fundraise/tips-and-resources'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -172,7 +161,6 @@ export interface FileRouteTypes {
     | '/donate/failure'
     | '/donate/success'
     | '/fundraise/how-it-works'
-    | '/fundraise/tips-and-resources'
   id:
     | '__root__'
     | '/'
@@ -188,7 +176,6 @@ export interface FileRouteTypes {
     | '/donate/failure'
     | '/donate/success'
     | '/fundraise/how-it-works'
-    | '/fundraise/tips-and-resources'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -202,7 +189,6 @@ export interface RootRouteChildren {
   DonateFailureRoute: typeof DonateFailureRoute
   DonateSuccessRoute: typeof DonateSuccessRoute
   FundraiseHowItWorksRoute: typeof FundraiseHowItWorksRoute
-  FundraiseTipsAndResourcesRoute: typeof FundraiseTipsAndResourcesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -233,13 +219,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/fundraise/tips-and-resources': {
-      id: '/fundraise/tips-and-resources'
-      path: '/fundraise/tips-and-resources'
-      fullPath: '/fundraise/tips-and-resources'
-      preLoaderRoute: typeof FundraiseTipsAndResourcesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fundraise/how-it-works': {
@@ -335,7 +314,6 @@ const rootRouteChildren: RootRouteChildren = {
   DonateFailureRoute: DonateFailureRoute,
   DonateSuccessRoute: DonateSuccessRoute,
   FundraiseHowItWorksRoute: FundraiseHowItWorksRoute,
-  FundraiseTipsAndResourcesRoute: FundraiseTipsAndResourcesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
