@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Heart, Menu, Search, LogOut } from "lucide-react";
+import { Heart, Menu, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
@@ -30,15 +30,16 @@ export function SiteHeader() {
           </span>
           BaayuLok
         </Link>
-        <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
-          {nav.map((n) => (
-            <Link key={n.to} to={n.to} className="text-foreground/80 transition hover:text-primary">
-              {n.label}
-            </Link>
-          ))}
-        </nav>
+        {user && (
+          <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
+            {nav.map((n) => (
+              <Link key={n.to} to={n.to} className="text-foreground/80 transition hover:text-primary">
+                {n.label}
+              </Link>
+            ))}
+          </nav>
+        )}
         <div className="hidden items-center gap-2 md:flex">
-          <Button variant="ghost" size="icon" aria-label="Search"><Search className="h-4 w-4" /></Button>
           {user ? (
             <>
               <Link to="/dashboard"><Button variant="ghost">Dashboard</Button></Link>
@@ -59,7 +60,7 @@ export function SiteHeader() {
       {open && (
         <div className="border-t border-border/60 bg-background md:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3">
-            {nav.map((n) => (
+            {user && nav.map((n) => (
               <Link key={n.to} to={n.to} onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-sm hover:bg-secondary">
                 {n.label}
               </Link>

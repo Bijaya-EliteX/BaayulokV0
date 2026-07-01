@@ -40,8 +40,6 @@ function Page() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 md:px-6">
-      <h1 className="font-display text-5xl font-bold">All campaigns</h1>
-      <p className="mt-3 text-muted-foreground">{loading ? "Loading..." : `${list.length} verified causes looking for your support.`}</p>
       <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-center">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
