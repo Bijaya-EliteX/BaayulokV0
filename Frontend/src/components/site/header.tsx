@@ -3,11 +3,11 @@ import { Heart, Menu, Search, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
+import { useAuthModal } from "@/hooks/use-auth-modal";
 
 const nav = [
   { to: "/categories", label: "Donate" },
   { to: "/campaign/list", label: "Campaigns" },
-  { to: "/fundraise/how-it-works", label: "How it works" },
   { to: "/fundraise/tips-and-resources", label: "Resources" },
 ];
 
@@ -15,6 +15,7 @@ export function SiteHeader() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const { user, logout } = useAuth();
+  const { openLogin } = useAuthModal();
 
   const handleLogout = async () => {
     await logout();
@@ -48,7 +49,7 @@ export function SiteHeader() {
               <Button variant="ghost" onClick={handleLogout}><LogOut className="mr-1 h-4 w-4" />Sign out</Button>
             </>
           ) : (
-            <Link to="/auth"><Button variant="ghost">Login</Button></Link>
+            <Button variant="ghost" onClick={openLogin}>Login</Button>
           )}
           <Link to="/campaign/create"><Button className="rounded-full">Start a Campaign</Button></Link>
         </div>
@@ -75,7 +76,7 @@ export function SiteHeader() {
                 </button>
               </>
             ) : (
-              <Link to="/auth" onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-sm hover:bg-secondary">Login</Link>
+              <button onClick={() => { openLogin(); setOpen(false); }} className="rounded-md px-3 py-2 text-sm hover:bg-secondary text-left">Login</button>
             )}
             <Link to="/campaign/create" onClick={() => setOpen(false)} className="mt-1 rounded-md bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground">Start a Campaign</Link>
           </div>

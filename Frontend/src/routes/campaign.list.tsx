@@ -1,11 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import { Search, Loader2 } from "lucide-react";
-import { campaignsApi, categoriesApi, type CampaignData, type CategoryData } from "@/lib/api";
+import { campaignsApi, categoriesApi, type CampaignData, type CategoryData, getStoredUser } from "@/lib/api";
 import { CampaignCard } from "@/components/site/campaign-card";
 import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/campaign/list")({
+  beforeLoad: () => {
+    if (!getStoredUser()) {
+      sessionStorage.setItem("openAuthModal", "1");
+      throw redirect({ to: "/" });
+    }
+  },
   head: () => ({ meta: [{ title: "All Campaigns — BaayuLok" }, { name: "description", content: "Browse all live crowdfunding campaigns on BaayuLok." }] }),
   component: Page,
 });

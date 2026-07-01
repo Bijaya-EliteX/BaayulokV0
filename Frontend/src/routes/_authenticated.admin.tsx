@@ -1,10 +1,16 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { adminApi, formatNpr, type AdminCampaign } from "@/lib/api";
+import { adminApi, formatNpr, type AdminCampaign, getStoredUser } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Check, X, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  beforeLoad: () => {
+    const user = getStoredUser();
+    if (user?.role !== "Admin") {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   head: () => ({ meta: [{ title: "Admin Review — BaayuLok" }] }),
   component: Page,
 });

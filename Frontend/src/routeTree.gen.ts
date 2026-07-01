@@ -20,6 +20,7 @@ import { Route as DonateFailureRouteImport } from './routes/donate.failure'
 import { Route as CampaignListRouteImport } from './routes/campaign.list'
 import { Route as CampaignCreateRouteImport } from './routes/campaign.create'
 import { Route as CampaignSlugRouteImport } from './routes/campaign.$slug'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 
@@ -78,6 +79,11 @@ const CampaignSlugRoute = CampaignSlugRouteImport.update({
   path: '/campaign/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -95,6 +101,7 @@ export interface FileRoutesByFullPath {
   '/categories': typeof CategoriesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/campaign/$slug': typeof CampaignSlugRoute
   '/campaign/create': typeof CampaignCreateRoute
   '/campaign/list': typeof CampaignListRoute
@@ -109,6 +116,7 @@ export interface FileRoutesByTo {
   '/categories': typeof CategoriesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/campaign/$slug': typeof CampaignSlugRoute
   '/campaign/create': typeof CampaignCreateRoute
   '/campaign/list': typeof CampaignListRoute
@@ -125,6 +133,7 @@ export interface FileRoutesById {
   '/categories': typeof CategoriesRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/campaign/$slug': typeof CampaignSlugRoute
   '/campaign/create': typeof CampaignCreateRoute
   '/campaign/list': typeof CampaignListRoute
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/admin'
     | '/dashboard'
+    | '/profile'
     | '/campaign/$slug'
     | '/campaign/create'
     | '/campaign/list'
@@ -155,6 +165,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/admin'
     | '/dashboard'
+    | '/profile'
     | '/campaign/$slug'
     | '/campaign/create'
     | '/campaign/list'
@@ -170,6 +181,7 @@ export interface FileRouteTypes {
     | '/categories'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
+    | '/_authenticated/profile'
     | '/campaign/$slug'
     | '/campaign/create'
     | '/campaign/list'
@@ -272,6 +284,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CampaignSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -292,11 +311,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

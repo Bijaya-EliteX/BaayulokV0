@@ -1,10 +1,16 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { categoriesApi, campaignsApi, type CategoryData, type CampaignData } from "@/lib/api";
+import { categoriesApi, campaignsApi, type CategoryData, type CampaignData, getStoredUser } from "@/lib/api";
 import { CampaignCard } from "@/components/site/campaign-card";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/categories")({
+  beforeLoad: () => {
+    if (!getStoredUser()) {
+      sessionStorage.setItem("openAuthModal", "1");
+      throw redirect({ to: "/" });
+    }
+  },
   head: () => ({ meta: [{ title: "Browse Categories — BaayuLok" }, { name: "description", content: "Explore Nepali crowdfunding causes by category." }] }),
   component: Page,
 });

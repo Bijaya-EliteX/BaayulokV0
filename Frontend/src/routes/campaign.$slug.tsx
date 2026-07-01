@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { campaignsApi, formatNpr, type CampaignData, type DonorInfo } from "@/lib/api";
+import { campaignsApi, formatNpr, type CampaignData, type DonorInfo, getStoredUser } from "@/lib/api";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { MapPin, ShieldCheck, Share2, Clock, Users, Heart, Loader2 } from "lucide-react";
@@ -8,6 +8,12 @@ import type { LucideIcon } from "lucide-react";
 import { DonationModal } from "@/components/site/donation-modal";
 
 export const Route = createFileRoute("/campaign/$slug")({
+  beforeLoad: () => {
+    if (!getStoredUser()) {
+      sessionStorage.setItem("openAuthModal", "1");
+      throw redirect({ to: "/" });
+    }
+  },
   loader: ({ params }) => campaignsApi.get(params.slug).then(r => r.data),
   head: ({ loaderData }) => ({
     meta: [
