@@ -52,7 +52,11 @@ export function SiteHeader() {
           ) : (
             <Button variant="ghost" onClick={openLogin}>Login</Button>
           )}
-          <Link to="/campaign/create"><Button className="rounded-full">Start a Campaign</Button></Link>
+          {user ? (
+            <Link to="/campaign/create"><Button className="rounded-full">Start a Campaign</Button></Link>
+          ) : (
+            <Button className="rounded-full" onClick={openLogin}>Start a Campaign</Button>
+          )}
         </div>
         <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen((v) => !v)} aria-label="Menu">
           <Menu className="h-5 w-5" />
@@ -78,7 +82,11 @@ export function SiteHeader() {
             ) : (
               <button onClick={() => { openLogin(); setOpen(false); }} className="rounded-md px-3 py-2 text-sm hover:bg-secondary text-left">Login</button>
             )}
-            <Link to="/campaign/create" onClick={() => setOpen(false)} className="mt-1 rounded-md bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground">Start a Campaign</Link>
+            {user ? (
+              <Link to="/campaign/create" onClick={() => setOpen(false)} className="mt-1 rounded-md bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground">Start a Campaign</Link>
+            ) : (
+              <button onClick={() => { openLogin(); setOpen(false); }} className="mt-1 rounded-md bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground">Start a Campaign</button>
+            )}
           </div>
         </div>
       )}

@@ -3143,11 +3143,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/bijaya77/Desktop/Baayulok/Backend/BaayuLok.API.csproj",
+      "projectUniqueName": "/home/bijaya77/Desktop/BaayulokV0/Backend/BaayuLok.API.csproj",
       "projectName": "BaayuLok.API",
-      "projectPath": "/home/bijaya77/Desktop/Baayulok/Backend/BaayuLok.API.csproj",
+      "projectPath": "/home/bijaya77/Desktop/BaayulokV0/Backend/BaayuLok.API.csproj",
       "packagesPath": "/home/bijaya77/.nuget/packages/",
-      "outputPath": "/home/bijaya77/Desktop/Baayulok/Backend/obj/",
+      "outputPath": "/home/bijaya77/Desktop/BaayulokV0/Backend/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/bijaya77/.nuget/NuGet/NuGet.Config"

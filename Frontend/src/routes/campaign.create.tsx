@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,10 +6,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Check, Loader2 } from "lucide-react";
 import { FileUpload, type UploadedFile } from "@/components/site/file-upload";
-import { categoriesApi, campaignsApi, uploadApi } from "@/lib/api";
+import { categoriesApi, campaignsApi, uploadApi, getStoredUser } from "@/lib/api";
 import { nepalProvinces } from "@/lib/nepal-locations";
 
 export const Route = createFileRoute("/campaign/create")({
+  beforeLoad: () => {
+    const user = getStoredUser();
+    if (!user) {
+      sessionStorage.setItem("openAuthModal", "1");
+      throw redirect({ to: "/" });
+    }
+  },
   head: () => ({ meta: [{ title: "Start a Campaign — BaayuLok" }] }),
   component: Page,
 });
