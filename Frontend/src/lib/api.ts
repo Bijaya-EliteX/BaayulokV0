@@ -140,6 +140,16 @@ export interface CampaignData {
   updatedAt: string;
 }
 
+export interface CampaignRecommendationData {
+  campaign: CampaignData;
+  score: number;
+  similarityScore: number;
+  donationVelocity: number;
+  fundingPercentage: number;
+  campaignAgeDays: number;
+  reason: string;
+}
+
 export interface CategoryData {
   id: string;
   name: string;
@@ -318,6 +328,14 @@ export const campaignsApi = {
     return request<PagedResult<CampaignData>>(`/campaigns${q ? `?${q}` : ""}`);
   },
   get: (slug: string) => request<ApiResult<CampaignData>>(`/campaigns/${slug}`),
+  recommended: (params?: { limit?: number }) => {
+    const qs = params?.limit ? `?limit=${params.limit}` : "";
+    return request<ApiResult<CampaignRecommendationData[]>>(`/campaigns/recommended${qs}`);
+  },
+  similar: (slug: string, params?: { limit?: number }) => {
+    const qs = params?.limit ? `?limit=${params.limit}` : "";
+    return request<ApiResult<CampaignRecommendationData[]>>(`/campaigns/${slug}/similar${qs}`);
+  },
   create: (data: {
     title: string;
     category: string;

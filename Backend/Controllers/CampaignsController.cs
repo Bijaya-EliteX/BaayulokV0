@@ -28,6 +28,26 @@ public class CampaignsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("recommended")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetRecommended([FromQuery] int limit = 6)
+    {
+        Guid? userId = null;
+        if (User.Identity?.IsAuthenticated == true)
+            userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var result = await _campaign.GetRecommendedAsync(userId, limit);
+        return Ok(ApiResponse<List<CampaignRecommendationResponse>>.Ok(result));
+    }
+
+    [HttpGet("{slug}/similar")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetSimilar(string slug, [FromQuery] int limit = 6)
+    {
+        var result = await _campaign.GetSimilarAsync(slug, limit);
+        return Ok(ApiResponse<List<CampaignRecommendationResponse>>.Ok(result));
+    }
+
     [HttpGet("{slug}")]
     [Authorize]
     public async Task<IActionResult> GetBySlug(string slug)

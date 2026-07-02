@@ -3,9 +3,10 @@ import { useState, useEffect } from "react";
 import { campaignsApi, formatNpr, type CampaignData, type DonorInfo, getStoredUser } from "@/lib/api";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { MapPin, ShieldCheck, Share2, Clock, Users, Heart, Loader2 } from "lucide-react";
+import { MapPin, ShieldCheck, Clock, Users, Heart, Loader2 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { DonationModal } from "@/components/site/donation-modal";
+import { CampaignCard } from "@/components/site/campaign-card";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/campaign/$slug")({
@@ -33,6 +34,7 @@ function Page() {
   const { user } = useAuth();
   const isAdmin = user?.role === "Admin";
   const [donors, setDonors] = useState<DonorInfo[]>([]);
+  const [similarCampaigns, setSimilarCampaigns] = useState<CampaignData[]>([]);
   const [donorsLoading, setDonorsLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const pct = Math.min(100, Math.round((c.raised / c.goal) * 100));
@@ -42,6 +44,10 @@ function Page() {
       .then(r => setDonors(r.data))
       .catch(() => {})
       .finally(() => setDonorsLoading(false));
+
+    campaignsApi.similar(c.slug, { limit: 3 })
+      .then(r => setSimilarCampaigns(r.data.map(item => item.campaign)))
+      .catch(() => setSimilarCampaigns([]));
   }, [c.slug]);
 
   return (
@@ -111,6 +117,20 @@ function Page() {
           </div>
         </aside>
       </div>
+      {similarCampaigns.length > 0 && (
+        <section className="mt-16">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-widest text-primary">Recommended</p>
+              <h2 className="mt-2 font-display text-3xl font-bold">Similar campaigns</h2>
+            </div>
+            <Link to="/campaign/list" className="text-sm font-semibold text-primary hover:underline">View all</Link>
+          </div>
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            {similarCampaigns.map(item => <CampaignCard key={item.slug} c={item} />)}
+          </div>
+        </section>
+      )}
       <DonationModal open={modalOpen} onOpenChange={setModalOpen} campaignSlug={c.slug} campaignTitle={c.title} />
     </div>
   );

@@ -4,10 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ArrowRight, ShieldCheck, FileText, HandCoins, Play, Megaphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CampaignCard } from "@/components/site/campaign-card";
-import { campaignsApi, categoriesApi, statsApi, type CampaignData, type CategoryData, type PlatformStats } from "@/lib/api";
+import { categoriesApi, statsApi, type CampaignData, type CategoryData, type PlatformStats } from "@/lib/api";
 import heroOrbit from "@/assets/hero-orbit.jpg";
-import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,23 +20,13 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const [campaigns, setCampaigns] = useState<CampaignData[]>([]);
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [stats, setStats] = useState<PlatformStats | null>(null);
-  const { user } = useAuth();
 
   useEffect(() => {
     categoriesApi.list().then(cat => setCategories(cat.data)).catch(() => {});
     statsApi.get().then(s => setStats(s.data)).catch(() => {});
-    
-    if (user) {
-      campaignsApi.list({ limit: 6, status: "Active" })
-        .then(c => setCampaigns(c.items))
-        .catch(() => {});
-    } else {
-      setCampaigns([]);
-    }
-  }, [user]);
+  }, []);
 
   return (
     <>
@@ -48,7 +36,7 @@ function Index() {
       <StatsSection stats={stats} />
       <CategoriesSection categories={categories} />
       <Alliances />
-      <AppPromo campaigns={campaigns} stats={stats} />
+      <AppPromo campaigns={[]} stats={stats} />
     </>
   );
 }
@@ -137,39 +125,6 @@ function OrbitGraphic() {
         );
       })}
     </div>
-  );
-}
-
-function Featured({ campaigns }: { campaigns: CampaignData[] }) {
-  const tabs = ["All", "Surgery", "Cancer Care", "Emergency Care", "Chronic Illness"] as const;
-  const [tab, setTab] = useState<typeof tabs[number]>("All");
-  const list = tab === "All" ? campaigns : campaigns.filter((c) => c.category === tab);
-  return (
-    <section className="mx-auto max-w-7xl px-4 py-20 md:px-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-widest text-primary">Live campaigns</p>
-          <h2 className="mt-2 font-display text-4xl font-bold text-foreground md:text-5xl">Featured causes</h2>
-        </div>
-        <Link to="/campaign/list" className="text-sm font-semibold text-primary hover:underline">View all →</Link>
-      </div>
-      <div className="mt-6 flex gap-2 overflow-x-auto pb-2">
-        {tabs.map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition ${tab === t ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:border-primary/40"}`}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
-      <div className="mt-8 flex gap-6 overflow-x-auto pb-4 md:grid md:grid-cols-3 md:overflow-visible">
-        {list.map((c) => (
-          <CampaignCard key={c.slug} c={c} />
-        ))}
-      </div>
-    </section>
   );
 }
 
