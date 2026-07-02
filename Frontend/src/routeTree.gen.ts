@@ -13,13 +13,13 @@ import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as FundraiseTipsAndResourcesRouteImport } from './routes/fundraise.tips-and-resources'
 import { Route as FundraiseHowItWorksRouteImport } from './routes/fundraise.how-it-works'
 import { Route as DonateSuccessRouteImport } from './routes/donate.success'
 import { Route as DonateFailureRouteImport } from './routes/donate.failure'
 import { Route as CampaignListRouteImport } from './routes/campaign.list'
 import { Route as CampaignCreateRouteImport } from './routes/campaign.create'
 import { Route as CampaignSlugRouteImport } from './routes/campaign.$slug'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated.admin'
 
@@ -42,12 +42,6 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FundraiseTipsAndResourcesRoute =
-  FundraiseTipsAndResourcesRouteImport.update({
-    id: '/fundraise/tips-and-resources',
-    path: '/fundraise/tips-and-resources',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const FundraiseHowItWorksRoute = FundraiseHowItWorksRouteImport.update({
   id: '/fundraise/how-it-works',
   path: '/fundraise/how-it-works',
@@ -78,6 +72,11 @@ const CampaignSlugRoute = CampaignSlugRouteImport.update({
   path: '/campaign/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -95,13 +94,13 @@ export interface FileRoutesByFullPath {
   '/categories': typeof CategoriesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/campaign/$slug': typeof CampaignSlugRoute
   '/campaign/create': typeof CampaignCreateRoute
   '/campaign/list': typeof CampaignListRoute
   '/donate/failure': typeof DonateFailureRoute
   '/donate/success': typeof DonateSuccessRoute
   '/fundraise/how-it-works': typeof FundraiseHowItWorksRoute
-  '/fundraise/tips-and-resources': typeof FundraiseTipsAndResourcesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -109,13 +108,13 @@ export interface FileRoutesByTo {
   '/categories': typeof CategoriesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/campaign/$slug': typeof CampaignSlugRoute
   '/campaign/create': typeof CampaignCreateRoute
   '/campaign/list': typeof CampaignListRoute
   '/donate/failure': typeof DonateFailureRoute
   '/donate/success': typeof DonateSuccessRoute
   '/fundraise/how-it-works': typeof FundraiseHowItWorksRoute
-  '/fundraise/tips-and-resources': typeof FundraiseTipsAndResourcesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,13 +124,13 @@ export interface FileRoutesById {
   '/categories': typeof CategoriesRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/campaign/$slug': typeof CampaignSlugRoute
   '/campaign/create': typeof CampaignCreateRoute
   '/campaign/list': typeof CampaignListRoute
   '/donate/failure': typeof DonateFailureRoute
   '/donate/success': typeof DonateSuccessRoute
   '/fundraise/how-it-works': typeof FundraiseHowItWorksRoute
-  '/fundraise/tips-and-resources': typeof FundraiseTipsAndResourcesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,13 +140,13 @@ export interface FileRouteTypes {
     | '/categories'
     | '/admin'
     | '/dashboard'
+    | '/profile'
     | '/campaign/$slug'
     | '/campaign/create'
     | '/campaign/list'
     | '/donate/failure'
     | '/donate/success'
     | '/fundraise/how-it-works'
-    | '/fundraise/tips-and-resources'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,13 +154,13 @@ export interface FileRouteTypes {
     | '/categories'
     | '/admin'
     | '/dashboard'
+    | '/profile'
     | '/campaign/$slug'
     | '/campaign/create'
     | '/campaign/list'
     | '/donate/failure'
     | '/donate/success'
     | '/fundraise/how-it-works'
-    | '/fundraise/tips-and-resources'
   id:
     | '__root__'
     | '/'
@@ -170,13 +169,13 @@ export interface FileRouteTypes {
     | '/categories'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
+    | '/_authenticated/profile'
     | '/campaign/$slug'
     | '/campaign/create'
     | '/campaign/list'
     | '/donate/failure'
     | '/donate/success'
     | '/fundraise/how-it-works'
-    | '/fundraise/tips-and-resources'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -190,7 +189,6 @@ export interface RootRouteChildren {
   DonateFailureRoute: typeof DonateFailureRoute
   DonateSuccessRoute: typeof DonateSuccessRoute
   FundraiseHowItWorksRoute: typeof FundraiseHowItWorksRoute
-  FundraiseTipsAndResourcesRoute: typeof FundraiseTipsAndResourcesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -221,13 +219,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/fundraise/tips-and-resources': {
-      id: '/fundraise/tips-and-resources'
-      path: '/fundraise/tips-and-resources'
-      fullPath: '/fundraise/tips-and-resources'
-      preLoaderRoute: typeof FundraiseTipsAndResourcesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/fundraise/how-it-works': {
@@ -272,6 +263,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CampaignSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -292,11 +290,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -314,7 +314,6 @@ const rootRouteChildren: RootRouteChildren = {
   DonateFailureRoute: DonateFailureRoute,
   DonateSuccessRoute: DonateSuccessRoute,
   FundraiseHowItWorksRoute: FundraiseHowItWorksRoute,
-  FundraiseTipsAndResourcesRoute: FundraiseTipsAndResourcesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

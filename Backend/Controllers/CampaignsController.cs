@@ -16,6 +16,7 @@ public class CampaignsController : ControllerBase
     public CampaignsController(ICampaignService campaign) => _campaign = campaign;
 
     [HttpGet]
+    [Authorize]
     public async Task<IActionResult> GetAll(
         [FromQuery] string? search,
         [FromQuery] string? category,
@@ -28,6 +29,7 @@ public class CampaignsController : ControllerBase
     }
 
     [HttpGet("{slug}")]
+    [Authorize]
     public async Task<IActionResult> GetBySlug(string slug)
     {
         var result = await _campaign.GetBySlugAsync(slug);

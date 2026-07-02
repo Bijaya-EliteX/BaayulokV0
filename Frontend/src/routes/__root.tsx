@@ -15,6 +15,9 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/site/header";
 import { SiteFooter } from "@/components/site/footer";
 import { AuthProvider } from "@/hooks/use-auth";
+import { AuthModalProvider } from "@/hooks/use-auth-modal";
+import { AuthModal } from "@/components/site/auth-modal";
+import { useAuthModal } from "@/hooks/use-auth-modal";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 
@@ -133,22 +136,44 @@ function RootComponent() {
       {GOOGLE_CLIENT_ID ? (
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <AuthProvider>
+            <AuthModalProvider>
+              <ModalTrigger />
+              <SiteHeader />
+              <main className="min-h-[60vh]">
+                <Outlet />
+              </main>
+              <SiteFooter />
+              <AuthModal />
+            </AuthModalProvider>
+          </AuthProvider>
+        </GoogleOAuthProvider>
+      ) : (
+        <AuthProvider>
+          <AuthModalProvider>
+            <ModalTrigger />
             <SiteHeader />
             <main className="min-h-[60vh]">
               <Outlet />
             </main>
             <SiteFooter />
-          </AuthProvider>
-        </GoogleOAuthProvider>
-      ) : (
-        <AuthProvider>
-          <SiteHeader />
-          <main className="min-h-[60vh]">
-            <Outlet />
-          </main>
-          <SiteFooter />
+            <AuthModal />
+          </AuthModalProvider>
         </AuthProvider>
       )}
     </QueryClientProvider>
   );
+}
+
+/** Watches sessionStorage and opens the login modal when a protected route redirects here */
+function ModalTrigger() {
+  const { openLogin } = useAuthModal();
+
+  useEffect(() => {
+    if (sessionStorage.getItem("openAuthModal")) {
+      sessionStorage.removeItem("openAuthModal");
+      openLogin();
+    }
+  });
+
+  return null;
 }

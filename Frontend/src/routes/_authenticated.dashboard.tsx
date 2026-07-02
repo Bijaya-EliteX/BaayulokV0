@@ -36,8 +36,8 @@ function Page() {
   return (
     <div className="mt-8 space-y-10">
       <div>
-        <h1 className="font-display text-3xl font-bold">Welcome back, {user?.fullName ?? "User"} 👋</h1>
-        <p className="text-muted-foreground">Here's how your campaigns and donations are doing.</p>
+        {/* <h1 className="font-display text-3xl font-bold">Welcome back, {user?.fullName ?? "User"} 👋</h1> */}
+        {/* <p className="text-muted-foreground">Here's how your campaigns and donations are doing.</p> */}
       </div>
       <div className="grid gap-4 md:grid-cols-3">
         <Stat label="Total raised" value={stats ? formatNpr(stats.totalRaised) : "NPR 0"} />

@@ -55,6 +55,7 @@ public class AppDbContext : DbContext
         });
 
         SeedCategories(modelBuilder);
+        SeedAdmin(modelBuilder);
     }
 
     private static void SeedCategories(ModelBuilder modelBuilder)
@@ -70,4 +71,28 @@ public class AppDbContext : DbContext
             new Category { Id = Guid.Parse("a7b8c9d0-e1f2-3456-abcd-567890123456"), Name = "Transplant", Slug = "transplant", Emoji = "\U0001f9f5", Description = "Organ transplant and recovery support", CreatedAt = createdAt }
         );
     }
+
+    private static void SeedAdmin(ModelBuilder modelBuilder)
+    {
+        var createdAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        modelBuilder.Entity<User>().HasData(
+            new User
+            {
+                Id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Email = "admin@abc.com",
+                FullName = "Admin",
+                // Password: Admin@123  (bcrypt hash, work factor 11 — matches BCrypt.Net.BCrypt.HashPassword default)
+                PasswordHash = "$2b$11$6M9.IJXqCt4ZV/brjM5s2ODTCirD3ULFNx8yw9XsVHyKqx6xahGCy",
+                Role = UserRole.Admin,
+                KYCStatus = KYCStatus.Verified,
+                Avatar = null,
+                GoogleId = null,
+                CreatedAt = createdAt,
+                UpdatedAt = createdAt
+            }
+        );
+    }
 }
+
+

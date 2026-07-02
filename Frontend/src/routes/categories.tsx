@@ -1,10 +1,16 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { categoriesApi, campaignsApi, type CategoryData, type CampaignData } from "@/lib/api";
+import { categoriesApi, campaignsApi, type CategoryData, type CampaignData, getStoredUser } from "@/lib/api";
 import { CampaignCard } from "@/components/site/campaign-card";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/categories")({
+  beforeLoad: () => {
+    if (!getStoredUser()) {
+      sessionStorage.setItem("openAuthModal", "1");
+      throw redirect({ to: "/" });
+    }
+  },
   head: () => ({ meta: [{ title: "Browse Categories — BaayuLok" }, { name: "description", content: "Explore Nepali crowdfunding causes by category." }] }),
   component: Page,
 });
@@ -28,8 +34,6 @@ function Page() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 md:px-6">
-      <h1 className="font-display text-5xl font-bold">Browse by category</h1>
-      <p className="mt-3 max-w-2xl text-muted-foreground">Find verified causes across Nepal. Every campaign is reviewed for authenticity before going live.</p>
       <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-7">
         {categories.map((c) => (
           <Link key={c.name} to="/campaign/list" className="rounded-2xl border border-border bg-card p-6 text-center hover:border-primary hover:shadow-md transition">
