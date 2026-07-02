@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { ArrowRight, ShieldCheck, FileText, HandCoins, Play, Megaphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { categoriesApi, statsApi, type CampaignData, type CategoryData, type PlatformStats } from "@/lib/api";
+import { campaignsApi, categoriesApi, statsApi, getImageUrl, type CampaignData, type CategoryData, type PlatformStats } from "@/lib/api";
+import { useAuth } from "@/hooks/use-auth";
 import heroOrbit from "@/assets/hero-orbit.jpg";
 
 export const Route = createFileRoute("/")({
@@ -20,13 +21,23 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const [campaigns, setCampaigns] = useState<CampaignData[]>([]);
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [stats, setStats] = useState<PlatformStats | null>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     categoriesApi.list().then(cat => setCategories(cat.data)).catch(() => {});
     statsApi.get().then(s => setStats(s.data)).catch(() => {});
-  }, []);
+    
+    if (user) {
+      campaignsApi.list({ limit: 6, status: "Active" })
+        .then(c => setCampaigns(c.items))
+        .catch(() => {});
+    } else {
+      setCampaigns([]);
+    }
+  }, [user]);
 
   return (
     <>
@@ -36,7 +47,7 @@ function Index() {
       <StatsSection stats={stats} />
       <CategoriesSection categories={categories} />
       <Alliances />
-      <AppPromo campaigns={[]} stats={stats} />
+      <AppPromo campaigns={campaigns} stats={stats} />
     </>
   );
 }
@@ -44,6 +55,7 @@ function Index() {
 const WORDS = ["Smile", "Hope", "Life", "Family"];
 
 function Hero() {
+  const { user } = useAuth();
   const [i, setI] = useState(0);
   useEffect(() => {
     const t = setInterval(() => setI((v) => (v + 1) % WORDS.length), 2200);
@@ -78,10 +90,12 @@ function Hero() {
           <p className="mt-5 max-w-xl text-lg text-muted-foreground">
             Every rupee on BaayuLok reaches a verified Nepali family. Donate, fundraise, and watch impact happen in real time.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/campaign/list"><Button size="lg" className="rounded-full">Donate Now <ArrowRight className="ml-1 h-4 w-4" /></Button></Link>
-            <Link to="/campaign/create"><Button size="lg" variant="outline" className="rounded-full border-primary text-primary">Start a Campaign</Button></Link>
-          </div>
+          {user && (
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Link to="/campaign/list"><Button size="lg" className="rounded-full">Donate Now <ArrowRight className="ml-1 h-4 w-4" /></Button></Link>
+              <Link to="/campaign/create"><Button size="lg" variant="outline" className="rounded-full border-primary text-primary">Start a Campaign</Button></Link>
+            </div>
+          )}
           <div className="mt-8 flex items-center gap-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> KYC-verified causes</div>
             <div className="flex items-center gap-2"><HandCoins className="h-4 w-4 text-primary" /> 100% to beneficiary</div>
@@ -275,8 +289,8 @@ function AppPromo({ campaigns, stats }: { campaigns: CampaignData[]; stats: Plat
                 {campaigns.slice(0, 2).map((c) => (
                   <div key={c.slug} className="rounded-xl bg-secondary p-2">
                     <div className="h-12 w-full overflow-hidden rounded bg-secondary/50 flex items-center justify-center text-xs text-muted-foreground">
-                      {c.coverImage ? (
-                        <img src={c.coverImage} alt="" className="h-full w-full object-cover" />
+                      {getImageUrl(c.coverImage) ? (
+                        <img src={getImageUrl(c.coverImage)!} alt="" className="h-full w-full object-cover" />
                       ) : "No image"}
                     </div>
                     <p className="mt-1 line-clamp-2 text-[10px] font-medium">{c.title}</p>

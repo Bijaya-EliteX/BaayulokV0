@@ -5,7 +5,7 @@ import { getStoredUser } from "@/lib/api";
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: () => {
     const user = getStoredUser();
-    if (!user) {
+    if (typeof window !== "undefined" && !getStoredUser()) {
       sessionStorage.setItem("openAuthModal", "1");
       throw redirect({ to: "/" });
     }

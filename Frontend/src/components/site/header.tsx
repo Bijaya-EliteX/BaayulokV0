@@ -32,8 +32,9 @@ export function SiteHeader() {
           </span>
           BaayuLok
         </Link>
+        {/* Center navigation links for logged‑in users */}
         {user && (
-          <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
+          <nav className="flex flex-1 justify-center gap-7 text-sm font-medium">
             {nav.map((n) => (
               <Link key={n.to} to={n.to} className="text-foreground/80 transition hover:text-primary">
                 {n.label}
@@ -41,44 +42,75 @@ export function SiteHeader() {
             ))}
           </nav>
         )}
-        <div className="hidden items-center gap-2 md:flex">
+        <div className="flex items-center gap-2">
           {user ? (
             <>
               {user.role === "Admin" && (
-                <Link to="/admin"><Button variant="ghost">Admin</Button></Link>
+                <Link to="/admin">
+                  <Button variant="ghost">Admin</Button>
+                </Link>
               )}
-              <Button variant="ghost" onClick={handleLogout}><LogOut className="mr-1 h-4 w-4" />Sign out</Button>
+              <Button variant="ghost" onClick={handleLogout}>
+                <LogOut className="mr-1 h-4 w-4" />Sign out
+              </Button>
             </>
           ) : (
             <Button variant="ghost" onClick={openLogin}>Login</Button>
           )}
-          <Link to="/campaign/create"><Button className="rounded-full">Start a Campaign</Button></Link>
+          <Link to="/campaign/create">
+            <Button className="rounded-full">Start a Campaign</Button>
+          </Link>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setOpen((v) => !v)}
+            aria-label="Menu"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
         </div>
-        <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen((v) => !v)} aria-label="Menu">
-          <Menu className="h-5 w-5" />
-        </Button>
       </div>
+      {/* Mobile menu */}
       {open && (
         <div className="border-t border-border/60 bg-background md:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3">
             {user && nav.map((n) => (
-              <Link key={n.to} to={n.to} onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-sm hover:bg-secondary">
+              <Link
+                key={n.to}
+                to={n.to}
+                onClick={() => setOpen(false)}
+                className="rounded-md px-3 py-2 text-sm hover:bg-secondary"
+              >
                 {n.label}
               </Link>
             ))}
             {user ? (
               <>
                 {user.role === "Admin" && (
-                  <Link to="/admin" onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-sm hover:bg-secondary">Admin</Link>
+                  <Link to="/admin" onClick={() => setOpen(false)} className="rounded-md px-3 py-2 text-sm hover:bg-secondary">
+                    Admin
+                  </Link>
                 )}
-                <button onClick={() => { handleLogout(); setOpen(false); }} className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-red-600 hover:bg-secondary">
+                <button
+                  onClick={() => { handleLogout(); setOpen(false); }}
+                  className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-red-600 hover:bg-secondary"
+                >
                   <LogOut className="h-4 w-4" /> Sign out
                 </button>
               </>
             ) : (
-              <button onClick={() => { openLogin(); setOpen(false); }} className="rounded-md px-3 py-2 text-sm hover:bg-secondary text-left">Login</button>
+              <button onClick={() => { openLogin(); setOpen(false); }} className="rounded-md px-3 py-2 text-sm hover:bg-secondary">
+                Login
+              </button>
             )}
-            <Link to="/campaign/create" onClick={() => setOpen(false)} className="mt-1 rounded-md bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground">Start a Campaign</Link>
+            <Link
+              to="/campaign/create"
+              onClick={() => setOpen(false)}
+              className="mt-1 rounded-md bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground"
+            >
+              Start a Campaign
+            </Link>
           </div>
         </div>
       )}

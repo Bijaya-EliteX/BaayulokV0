@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/campaign/list")({
   beforeLoad: () => {
-    if (!getStoredUser()) {
+    if (typeof window !== "undefined" && !getStoredUser()) {
       sessionStorage.setItem("openAuthModal", "1");
       throw redirect({ to: "/" });
     }
@@ -39,23 +39,39 @@ function Page() {
   ), [q, cat, campaigns]);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-16 md:px-6">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative w-full shrink-0 md:w-48">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name or location…" className="h-12 rounded-full pl-10" />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {["All", ...categories.map(c => c.name)].map((c) => (
-              <button key={c} onClick={() => setCat(c)} className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition ${cat === c ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:border-primary/40"}`}>{c}</button>
-            ))}
-          </div>
+    <div className="mx-auto max-w-7xl px-2 md:px-4 pt-1 pb-4">
+      <div className="flex items-center gap-1.5 w-full">
+        <div className="relative shrink min-w-[120px] max-w-[200px]">
+          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search..."
+            className="h-8 rounded-full pl-8 text-xs"
+          />
         </div>
+        <div className="flex items-center gap-1 overflow-hidden shrink w-full justify-start">
+          {["All", ...categories.map(c => c.name)].map((c) => (
+            <button
+              key={c}
+              onClick={() => setCat(c)}
+              className={`shrink rounded-full border px-2 py-1 text-[10px] md:text-[11px] whitespace-nowrap font-medium transition ${cat === c ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card hover:border-primary/40"}`}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {loading ? (
-        <div className="mt-20 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+        <div className="mt-20 flex justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
       ) : (
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {list.map((c) => <CampaignCard key={c.slug} c={c} />)}
+        <div className="mt-6 grid gap-6 md:grid-cols-3">
+          {list.map((c) => (
+            <CampaignCard key={c.slug} c={c} />
+          ))}
         </div>
       )}
     </div>

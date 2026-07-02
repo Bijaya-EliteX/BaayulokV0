@@ -1,17 +1,16 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { campaignsApi, formatNpr, type CampaignData, type DonorInfo, getStoredUser } from "@/lib/api";
+import { campaignsApi, formatNpr, getImageUrl, type CampaignData, type DonorInfo, getStoredUser } from "@/lib/api";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { MapPin, ShieldCheck, Clock, Users, Heart, Loader2 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { DonationModal } from "@/components/site/donation-modal";
-import { CampaignCard } from "@/components/site/campaign-card";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/campaign/$slug")({
   beforeLoad: () => {
-    if (!getStoredUser()) {
+    if (typeof window !== "undefined" && !getStoredUser()) {
       sessionStorage.setItem("openAuthModal", "1");
       throw redirect({ to: "/" });
     }
@@ -21,7 +20,7 @@ export const Route = createFileRoute("/campaign/$slug")({
     meta: [
       { title: `${loaderData?.title ?? "Campaign"} — BaayuLok` },
       { name: "description", content: loaderData?.story?.slice(0, 150) ?? "" },
-      { property: "og:image", content: loaderData?.coverImage ?? "" },
+      { property: "og:image", content: getImageUrl(loaderData?.coverImage) ?? "" },
     ],
   }),
   component: Page,
@@ -34,7 +33,6 @@ function Page() {
   const { user } = useAuth();
   const isAdmin = user?.role === "Admin";
   const [donors, setDonors] = useState<DonorInfo[]>([]);
-  const [similarCampaigns, setSimilarCampaigns] = useState<CampaignData[]>([]);
   const [donorsLoading, setDonorsLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const pct = Math.min(100, Math.round((c.raised / c.goal) * 100));
@@ -44,10 +42,6 @@ function Page() {
       .then(r => setDonors(r.data))
       .catch(() => {})
       .finally(() => setDonorsLoading(false));
-
-    campaignsApi.similar(c.slug, { limit: 3 })
-      .then(r => setSimilarCampaigns(r.data.map(item => item.campaign)))
-      .catch(() => setSimilarCampaigns([]));
   }, [c.slug]);
 
   return (
@@ -56,7 +50,11 @@ function Page() {
       <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
         <div>
           <div className="overflow-hidden rounded-3xl border border-border">
-            <img src={c.coverImage ?? ""} alt={c.title} className="aspect-[16/10] w-full object-cover" />
+            {getImageUrl(c.coverImage) ? (
+              <img src={getImageUrl(c.coverImage)!} alt={c.title} className="aspect-[16/10] w-full object-cover" />
+            ) : (
+              <div className="aspect-[16/10] w-full bg-muted flex items-center justify-center text-muted-foreground text-sm">No image available</div>
+            )}
           </div>
           <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{c.category}</span>
           <h1 className="mt-3 font-display text-4xl font-bold leading-tight md:text-5xl">{c.title}</h1>
@@ -108,7 +106,6 @@ function Page() {
             ) : (
               <>
                 <Button size="lg" className="mt-6 w-full rounded-full" onClick={() => setModalOpen(true)}>Donate now</Button>
-                {/* <Button size="lg" variant="outline" className="mt-2 w-full rounded-full"><Share2 className="mr-2 h-4 w-4" />Share campaign</Button> */}
               </>
             )}
             <div className="mt-6 rounded-xl bg-secondary p-4 text-xs text-muted-foreground">
@@ -117,20 +114,6 @@ function Page() {
           </div>
         </aside>
       </div>
-      {similarCampaigns.length > 0 && (
-        <section className="mt-16">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-widest text-primary">Recommended</p>
-              <h2 className="mt-2 font-display text-3xl font-bold">Similar campaigns</h2>
-            </div>
-            <Link to="/campaign/list" className="text-sm font-semibold text-primary hover:underline">View all</Link>
-          </div>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {similarCampaigns.map(item => <CampaignCard key={item.slug} c={item} />)}
-          </div>
-        </section>
-      )}
       <DonationModal open={modalOpen} onOpenChange={setModalOpen} campaignSlug={c.slug} campaignTitle={c.title} />
     </div>
   );

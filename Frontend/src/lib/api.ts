@@ -1,21 +1,33 @@
 const API_BASE = "http://localhost:5157/api";
+export const BACKEND_BASE = "http://localhost:5157";
+
+/**
+ * Converts a relative backend image path like `/uploads/abc.jpg`
+ * into a fully-qualified URL. Returns null if path is null/empty.
+ */
+export function getImageUrl(path: string | null | undefined): string | null {
+  if (!path) return null;
+  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  return `${BACKEND_BASE}${path}`;
+}
 
 function getToken(): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("accessToken");
 }
-
 function getRefreshToken(): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("refreshToken");
 }
 
 export function setTokens(access: string, refresh: string) {
+  if (typeof window === "undefined") return;
   localStorage.setItem("accessToken", access);
   localStorage.setItem("refreshToken", refresh);
 }
 
 export function clearTokens() {
+  if (typeof window === "undefined") return;
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("user");
@@ -28,6 +40,7 @@ export function getStoredUser(): UserProfile | null {
 }
 
 export function storeUser(u: UserProfile) {
+  if (typeof window === "undefined") return;
   localStorage.setItem("user", JSON.stringify(u));
 }
 
@@ -138,16 +151,6 @@ export interface CampaignData {
   creatorName: string;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface CampaignRecommendationData {
-  campaign: CampaignData;
-  score: number;
-  similarityScore: number;
-  donationVelocity: number;
-  fundingPercentage: number;
-  campaignAgeDays: number;
-  reason: string;
 }
 
 export interface CategoryData {
@@ -328,14 +331,6 @@ export const campaignsApi = {
     return request<PagedResult<CampaignData>>(`/campaigns${q ? `?${q}` : ""}`);
   },
   get: (slug: string) => request<ApiResult<CampaignData>>(`/campaigns/${slug}`),
-  recommended: (params?: { limit?: number }) => {
-    const qs = params?.limit ? `?limit=${params.limit}` : "";
-    return request<ApiResult<CampaignRecommendationData[]>>(`/campaigns/recommended${qs}`);
-  },
-  similar: (slug: string, params?: { limit?: number }) => {
-    const qs = params?.limit ? `?limit=${params.limit}` : "";
-    return request<ApiResult<CampaignRecommendationData[]>>(`/campaigns/${slug}/similar${qs}`);
-  },
   create: (data: {
     title: string;
     category: string;
@@ -346,7 +341,7 @@ export const campaignsApi = {
     relationship: string;
     hospital: string;
     story: string;
-    coverImage?: string;
+    coverImage?: string | null;
   }) =>
     request<ApiResult<CampaignData>>("/campaigns", {
       method: "POST",

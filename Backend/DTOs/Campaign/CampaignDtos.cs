@@ -67,13 +67,3 @@ public record CategoryResponse(
     string Slug,
     int CampaignCount
 );
-
-public record CampaignRecommendationResponse(
-    CampaignResponse Campaign,
-    double Score,
-    double SimilarityScore,
-    double DonationVelocity,
-    double FundingPercentage,
-    int CampaignAgeDays,
-    string Reason
-);

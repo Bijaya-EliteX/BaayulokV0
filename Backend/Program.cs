@@ -88,7 +88,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("Frontend");
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+        ctx.Context.Response.Headers["Cache-Control"] = "public,max-age=86400";
+    }
+});
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

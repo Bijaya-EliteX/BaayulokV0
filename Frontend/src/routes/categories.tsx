@@ -6,7 +6,7 @@ import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/categories")({
   beforeLoad: () => {
-    if (!getStoredUser()) {
+    if (typeof window !== "undefined" && !getStoredUser()) {
       sessionStorage.setItem("openAuthModal", "1");
       throw redirect({ to: "/" });
     }
