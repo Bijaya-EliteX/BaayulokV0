@@ -19,6 +19,7 @@ public class AdminService : IAdminService
         var query = _db.Campaigns
             .Include(c => c.Category)
             .Include(c => c.User)
+            .Include(c => c.Images.OrderBy(i => i.SortOrder))
             .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(status) && status != "all")
@@ -34,7 +35,8 @@ public class AdminService : IAdminService
                 c.CoverImage, c.Goal, c.Raised, c.DonorsCount,
                 c.BeneficiaryName, c.Location,
                 c.Status.ToString(), c.Verified,
-                c.User.FullName, c.User.Email, c.CreatedAt
+                c.User.FullName, c.User.Email, c.CreatedAt,
+                c.Images.OrderBy(i => i.SortOrder).Select(i => i.Url).ToList()
             ))
             .ToListAsync();
     }
@@ -44,6 +46,7 @@ public class AdminService : IAdminService
         var campaign = await _db.Campaigns
             .Include(c => c.Category)
             .Include(c => c.User)
+            .Include(c => c.Images.OrderBy(i => i.SortOrder))
             .FirstOrDefaultAsync(c => c.Slug == slug)
             ?? throw new KeyNotFoundException("Campaign not found");
 
@@ -60,6 +63,7 @@ public class AdminService : IAdminService
         var campaign = await _db.Campaigns
             .Include(c => c.Category)
             .Include(c => c.User)
+            .Include(c => c.Images.OrderBy(i => i.SortOrder))
             .FirstOrDefaultAsync(c => c.Slug == slug)
             ?? throw new KeyNotFoundException("Campaign not found");
 
@@ -92,6 +96,7 @@ public class AdminService : IAdminService
         c.CoverImage, c.Goal, c.Raised, c.DonorsCount,
         c.BeneficiaryName, c.Location,
         c.Status.ToString(), c.Verified,
-        c.User.FullName, c.User.Email, c.CreatedAt
+        c.User.FullName, c.User.Email, c.CreatedAt,
+        c.Images.OrderBy(i => i.SortOrder).Select(i => i.Url).ToList()
     );
 }

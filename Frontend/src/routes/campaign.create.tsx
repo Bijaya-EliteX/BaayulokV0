@@ -23,6 +23,10 @@ export const Route = createFileRoute("/campaign/create")({
 
 const steps = ["Basics", "Story", "Beneficiary", "Documents", "Review"];
 
+function Required({ children }: { children: React.ReactNode }) {
+  return <span>{children} <span className="text-destructive">*</span></span>;
+}
+
 function Page() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
@@ -52,14 +56,37 @@ function Page() {
   const districts = nepalProvinces.find((p) => p.name === province)?.districts ?? [];
   const totalDocs = citizenship.length + hospitalLetter.length + medicalBills.length;
 
+  function canAdvance(fromStep: number): boolean {
+    switch (fromStep) {
+      case 0: return !!title && !!category && !!goal && !!province && !!district;
+      case 1: return !!story && cover.length > 0;
+      case 2: return !!beneficiaryName && !!relationship && !!hospital;
+      case 3: return citizenship.length > 0 && hospitalLetter.length > 0;
+      default: return true;
+    }
+  }
+
+  const handleContinue = () => {
+    if (!canAdvance(step)) return;
+    setStep(s => Math.min(steps.length - 1, s + 1));
+  };
+
   const handleSubmit = async () => {
     setError("");
     setSubmitting(true);
     try {
-      let coverImage: string | undefined;
-      if (cover.length > 0) {
-        coverImage = await uploadApi.file(cover[0].file);
-      }
+      const allUploads = await Promise.all([
+        ...cover.map(d => uploadApi.file(d.file)),
+        uploadApi.file(citizenship[0].file),
+        uploadApi.file(hospitalLetter[0].file),
+        ...(medicalBills.length > 0 ? medicalBills.map(d => uploadApi.file(d.file)) : []),
+      ]);
+      const imgCount = cover.length;
+      const coverImages = allUploads.slice(0, imgCount);
+      const citizenshipUrl = allUploads[imgCount];
+      const hospitalLetterUrl = allUploads[imgCount + 1];
+      const medicalBillsUrls = allUploads.slice(imgCount + 2);
+
       const res = await campaignsApi.create({
         title,
         category,
@@ -70,7 +97,10 @@ function Page() {
         relationship,
         hospital,
         story,
-        coverImage,
+        coverImages,
+        citizenshipUrl,
+        hospitalLetterUrl,
+        medicalBillsUrls: medicalBillsUrls.length > 0 ? medicalBillsUrls : undefined,
       });
       navigate({ to: "/campaign/$slug", params: { slug: res.data.slug } });
     } catch (err: any) {
@@ -100,16 +130,16 @@ function Page() {
 
       <div className="mt-10 space-y-5 rounded-3xl border border-border bg-card p-8">
         {step === 0 && <>
-          <Field label="Campaign title"><Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Help Aarav get heart surgery" /></Field>
-          <Field label="Medical category">
+          <Field label={<Required>Campaign title</Required>}><Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Help Aarav get heart surgery" /></Field>
+          <Field label={<Required>Medical category</Required>}>
             <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm" value={category} onChange={(e) => setCategory(e.target.value)}>
               <option value="" disabled>Select category</option>
               {categories.map((c) => <option key={c.name} value={c.name}>{c.name}</option>)}
             </select>
           </Field>
-          <Field label="Goal (NPR)"><Input value={goal} onChange={(e) => setGoal(e.target.value)} type="number" placeholder="500000" /></Field>
+          <Field label={<Required>Goal (NPR)</Required>}><Input value={goal} onChange={(e) => setGoal(e.target.value)} type="number" placeholder="500000" /></Field>
           <div className="grid gap-5 sm:grid-cols-2">
-            <Field label="Province">
+            <Field label={<Required>Province</Required>}>
               <select
                 className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
                 value={province}
@@ -119,7 +149,7 @@ function Page() {
                 {nepalProvinces.map((p) => <option key={p.name} value={p.name}>{p.name}</option>)}
               </select>
             </Field>
-            <Field label="District">
+            <Field label={<Required>District</Required>}>
               <select
                 className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm disabled:cursor-not-allowed disabled:opacity-50"
                 value={district}
@@ -133,22 +163,22 @@ function Page() {
           </div>
         </>}
         {step === 1 && <>
-          <Field label="Your story"><Textarea value={story} onChange={(e) => setStory(e.target.value)} rows={8} placeholder="Tell donors who you're raising for, their diagnosis, and the treatment needed…" /></Field>
-          <Field label="Cover image">
-            <FileUpload kind="image" files={cover} onChange={setCover} maxSizeMb={8} hint="A clear photo of the patient · JPG, PNG, WebP · up to 8 MB" />
+          <Field label={<Required>Your story</Required>}><Textarea value={story} onChange={(e) => setStory(e.target.value)} rows={8} placeholder="Tell donors who you're raising for, their diagnosis, and the treatment needed…" /></Field>
+          <Field label={<Required>Cover images</Required>}>
+            <FileUpload kind="image" multiple files={cover} onChange={setCover} maxSizeMb={8} hint="Upload one or more photos of the patient · JPG, PNG, WebP · up to 8 MB each" />
           </Field>
         </>}
         {step === 2 && <>
-          <Field label="Beneficiary (patient) full name"><Input value={beneficiaryName} onChange={(e) => setBeneficiaryName(e.target.value)} /></Field>
-          <Field label="Relationship"><Input value={relationship} onChange={(e) => setRelationship(e.target.value)} placeholder="Self / Parent / Child / Friend" /></Field>
-          <Field label="Hospital / treating institution"><Input value={hospital} onChange={(e) => setHospital(e.target.value)} /></Field>
+          <Field label={<Required>Beneficiary (patient) full name</Required>}><Input value={beneficiaryName} onChange={(e) => setBeneficiaryName(e.target.value)} /></Field>
+          <Field label={<Required>Relationship to patient</Required>}><Input value={relationship} onChange={(e) => setRelationship(e.target.value)} placeholder="Self / Parent / Child / Friend" /></Field>
+          <Field label={<Required>Hospital / treating institution</Required>}><Input value={hospital} onChange={(e) => setHospital(e.target.value)} /></Field>
         </>}
         {step === 3 && <>
           <p className="text-sm text-muted-foreground">Upload supporting documents. PDF, DOC, JPG or PNG accepted (up to 10 MB each). These are reviewed privately by our verification team.</p>
-          <Field label="Citizenship document">
+          <Field label={<Required>Citizenship document</Required>}>
             <FileUpload kind="document" files={citizenship} onChange={setCitizenship} />
           </Field>
-          <Field label="Hospital letter / diagnosis report">
+          <Field label={<Required>Hospital letter / diagnosis report</Required>}>
             <FileUpload kind="document" multiple files={hospitalLetter} onChange={setHospitalLetter} hint="Doctor's letter, diagnosis or treatment plan · multiple files allowed" />
           </Field>
           <Field label="Medical bills / cost estimate (optional)">
@@ -162,7 +192,7 @@ function Page() {
             <p className="mt-2 text-muted-foreground">We'll review your documents and notify you within 48 hours.</p>
             <div className="mx-auto mt-6 max-w-xs space-y-2 text-left text-sm">
               <SummaryRow label="Title" value={title} ok={!!title} />
-              <SummaryRow label="Cover image" value={cover.length ? cover[0].file.name : "Not added"} ok={cover.length > 0} />
+              <SummaryRow label="Cover images" value={`${cover.length} image${cover.length === 1 ? "" : "s"}`} ok={cover.length > 0} />
               <SummaryRow label="Citizenship" value={`${citizenship.length} file${citizenship.length === 1 ? "" : "s"}`} ok={citizenship.length > 0} />
               <SummaryRow label="Hospital letter" value={`${hospitalLetter.length} file${hospitalLetter.length === 1 ? "" : "s"}`} ok={hospitalLetter.length > 0} />
               <SummaryRow label="Medical bills" value={`${medicalBills.length} file${medicalBills.length === 1 ? "" : "s"}`} ok={medicalBills.length > 0} />
@@ -173,8 +203,8 @@ function Page() {
         <div className="flex justify-between pt-4">
           <Button variant="outline" onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0}>Back</Button>
           {step < steps.length - 1
-            ? <Button onClick={() => setStep(s => Math.min(steps.length - 1, s + 1))}>Continue</Button>
-            : <Button className="bg-primary" disabled={submitting || totalDocs === 0} onClick={handleSubmit}>
+            ? <Button onClick={handleContinue}>Continue</Button>
+            : <Button className="bg-primary" disabled={submitting || totalDocs === 0 || cover.length === 0} onClick={handleSubmit}>
                 {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                 Submit for review
               </Button>}
@@ -184,7 +214,7 @@ function Page() {
   );
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return <div className="space-y-2"><Label className="text-sm font-medium">{label}</Label>{children}</div>;
 }
 

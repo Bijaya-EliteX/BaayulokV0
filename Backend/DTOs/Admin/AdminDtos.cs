@@ -15,7 +15,8 @@ public record AdminCampaignResponse(
     bool Verified,
     string CreatorName,
     string CreatorEmail,
-    DateTime CreatedAt
+    DateTime CreatedAt,
+    List<string> Images
 );
 
 public record RejectCampaignRequest(string Reason);

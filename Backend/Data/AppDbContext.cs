@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Campaign> Campaigns => Set<Campaign>();
     public DbSet<CampaignDocument> CampaignDocuments => Set<CampaignDocument>();
+    public DbSet<CampaignImage> CampaignImages => Set<CampaignImage>();
     public DbSet<Donation> Donations => Set<Donation>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
@@ -40,6 +41,11 @@ public class AppDbContext : DbContext
         {
             e.Property(d => d.DocumentType).HasConversion<string>().HasMaxLength(30);
             e.HasOne(d => d.Campaign).WithMany(c => c.Documents).HasForeignKey(d => d.CampaignId);
+        });
+
+        modelBuilder.Entity<CampaignImage>(e =>
+        {
+            e.HasOne(i => i.Campaign).WithMany(c => c.Images).HasForeignKey(i => i.CampaignId);
         });
 
         modelBuilder.Entity<Donation>(e =>

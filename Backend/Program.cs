@@ -49,6 +49,7 @@ builder.Services.AddScoped<ICampaignService, CampaignService>();
 builder.Services.AddScoped<IDonationService, DonationService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+builder.Services.AddScoped<DemoSeedService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -111,6 +112,9 @@ using (var scope = app.Services.CreateScope())
     }
 
     db.Database.Migrate();
+
+    var seed = scope.ServiceProvider.GetRequiredService<DemoSeedService>();
+    await seed.SeedAsync();
 }
 
 app.Run();

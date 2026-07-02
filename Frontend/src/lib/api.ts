@@ -33,7 +33,8 @@ export function storeUser(u: UserProfile) {
 
 async function request<T>(
   path: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  skipAuthRedirect = false
 ): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = {
@@ -44,7 +45,7 @@ async function request<T>(
 
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
 
-  if (res.status === 401) {
+  if (res.status === 401 && !skipAuthRedirect) {
     const refreshed = await tryRefresh();
     if (refreshed) {
       headers["Authorization"] = `Bearer ${getToken()}`;
@@ -56,7 +57,10 @@ async function request<T>(
       return retry.json();
     }
     clearTokens();
-    if (typeof window !== "undefined") window.location.href = "/auth";
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("openAuthModal", "1");
+      window.location.href = "/";
+    }
     throw new ApiError("Unauthorized", 401);
   }
 
@@ -103,6 +107,13 @@ export class ApiError extends Error {
 export const formatNpr = (n: number) =>
   `NPR ${new Intl.NumberFormat("en-IN").format(n)}`;
 
+const API_ORIGIN = API_BASE.replace("/api", "");
+export function resolveImageUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `${API_ORIGIN}${url}`;
+}
+
 // --- Types ---
 export interface UserProfile {
   id: string;
@@ -112,6 +123,13 @@ export interface UserProfile {
   role: string;
   kycStatus: string;
   createdAt: string;
+}
+
+export interface DocumentInfo {
+  id: string;
+  documentType: string;
+  fileUrl: string;
+  fileName: string;
 }
 
 export interface CampaignData {
@@ -138,6 +156,8 @@ export interface CampaignData {
   creatorName: string;
   createdAt: string;
   updatedAt: string;
+  images: string[];
+  documents: DocumentInfo[];
 }
 
 export interface CategoryData {
@@ -217,6 +237,7 @@ export interface AdminCampaign {
   creatorName: string;
   creatorEmail: string;
   createdAt: string;
+  images: string[];
 }
 
 export interface PlatformStats {
@@ -260,23 +281,23 @@ export const authApi = {
     request<ApiResult<AuthResponse>>("/auth/signup", {
       method: "POST",
       body: JSON.stringify({ fullName, email, password }),
-    }),
+    }, true),
   login: (email: string, password: string) =>
     request<ApiResult<AuthResponse>>("/auth/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
-    }),
+    }, true),
   googleLogin: (idToken: string) =>
     request<ApiResult<AuthResponse>>("/auth/google", {
       method: "POST",
       body: JSON.stringify({ idToken }),
-    }),
-  me: () => request<ApiResult<UserProfile>>("/auth/me"),
+    }, true),
+  me: () => request<ApiResult<UserProfile>>("/auth/me", {}, true),
   refresh: (refreshToken: string) =>
     request<ApiResult<AuthResponse>>("/auth/refresh", {
       method: "POST",
       body: JSON.stringify({ refreshToken }),
-    }),
+    }, true),
   logout: (refreshToken: string) =>
     request<ApiResult<object>>("/auth/logout", {
       method: "POST",
@@ -328,7 +349,10 @@ export const campaignsApi = {
     relationship: string;
     hospital: string;
     story: string;
-    coverImage?: string;
+    coverImages: string[];
+    citizenshipUrl: string;
+    hospitalLetterUrl: string;
+    medicalBillsUrls?: string[];
   }) =>
     request<ApiResult<CampaignData>>("/campaigns", {
       method: "POST",

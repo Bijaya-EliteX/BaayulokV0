@@ -44,7 +44,18 @@ public class CampaignService : ICampaignService
             .OrderByDescending(c => c.CreatedAt)
             .Skip((page - 1) * limit)
             .Take(limit)
-            .Select(c => MapToResponse(c))
+            .Select(c => new CampaignResponse(
+                c.Id, c.Slug, c.Title,
+                c.Category.Name, c.Category.Emoji, c.CoverImage,
+                c.Goal, c.Raised, c.DonorsCount, c.DaysLeft,
+                c.Province, c.District, c.Location,
+                c.BeneficiaryName, c.Relationship, c.Hospital,
+                c.Story, c.Status.ToString(), c.Verified,
+                c.RejectionReason, c.User.FullName,
+                c.CreatedAt, c.UpdatedAt,
+                c.Images.OrderBy(i => i.SortOrder).Select(i => i.Url).ToList(),
+                c.Documents.Select(d => new DocumentInfo(d.Id, d.DocumentType.ToString(), d.FileUrl, d.FileName)).ToList()
+            ))
             .ToListAsync();
 
         return new PagedResponse<CampaignResponse>
@@ -61,6 +72,8 @@ public class CampaignService : ICampaignService
         var campaign = await _db.Campaigns
             .Include(c => c.Category)
             .Include(c => c.User)
+            .Include(c => c.Images.OrderBy(i => i.SortOrder))
+            .Include(c => c.Documents)
             .FirstOrDefaultAsync(c => c.Slug == slug)
             ?? throw new KeyNotFoundException("Campaign not found");
 
@@ -69,6 +82,13 @@ public class CampaignService : ICampaignService
 
     public async Task<CampaignResponse> CreateAsync(CreateCampaignRequest request, Guid userId)
     {
+        if (request.CoverImages == null || request.CoverImages.Count == 0)
+            throw new InvalidOperationException("Cover image is required");
+        if (string.IsNullOrWhiteSpace(request.CitizenshipUrl))
+            throw new InvalidOperationException("Citizenship document is required");
+        if (string.IsNullOrWhiteSpace(request.HospitalLetterUrl))
+            throw new InvalidOperationException("Hospital letter is required");
+
         var category = await _db.Categories.FirstOrDefaultAsync(c => c.Slug == request.Category.ToLower())
             ?? throw new KeyNotFoundException("Category not found");
 
@@ -88,12 +108,44 @@ public class CampaignService : ICampaignService
             Relationship = request.Relationship.Trim(),
             Hospital = request.Hospital.Trim(),
             Story = request.Story,
-            CoverImage = request.CoverImage,
+            CoverImage = request.CoverImages[0],
             Status = CampaignStatus.Pending,
             UserId = userId
         };
 
         _db.Campaigns.Add(campaign);
+        await _db.SaveChangesAsync();
+
+        var images = request.CoverImages.Select((url, i) => new CampaignImage
+        {
+            CampaignId = campaign.Id,
+            Url = url,
+            SortOrder = i
+        }).ToList();
+
+        var documents = new List<CampaignDocument>
+        {
+            new() { CampaignId = campaign.Id, DocumentType = DocumentType.Citizenship, FileUrl = request.CitizenshipUrl, FileName = "citizenship", UploadedAt = DateTime.UtcNow },
+            new() { CampaignId = campaign.Id, DocumentType = DocumentType.HospitalLetter, FileUrl = request.HospitalLetterUrl, FileName = "hospital-letter", UploadedAt = DateTime.UtcNow },
+        };
+
+        if (request.MedicalBillsUrls != null)
+        {
+            foreach (var url in request.MedicalBillsUrls)
+            {
+                documents.Add(new CampaignDocument
+                {
+                    CampaignId = campaign.Id,
+                    DocumentType = DocumentType.MedicalBill,
+                    FileUrl = url,
+                    FileName = "medical-bill",
+                    UploadedAt = DateTime.UtcNow
+                });
+            }
+        }
+
+        _db.CampaignImages.AddRange(images);
+        _db.CampaignDocuments.AddRange(documents);
         await _db.SaveChangesAsync();
 
         return await GetBySlugAsync(campaign.Slug);
@@ -156,7 +208,9 @@ public class CampaignService : ICampaignService
         c.BeneficiaryName, c.Relationship, c.Hospital,
         c.Story, c.Status.ToString(), c.Verified,
         c.RejectionReason, c.User.FullName,
-        c.CreatedAt, c.UpdatedAt
+        c.CreatedAt, c.UpdatedAt,
+        (c.Images ?? []).OrderBy(i => i.SortOrder).Select(i => i.Url).ToList(),
+        (c.Documents ?? []).Select(d => new DocumentInfo(d.Id, d.DocumentType.ToString(), d.FileUrl, d.FileName)).ToList()
     );
 
     private static string GenerateSlug(string title)

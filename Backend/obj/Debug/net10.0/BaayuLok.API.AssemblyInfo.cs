@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BaayuLok.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+28ef2d89be61ed204daf7c29e0caa2a70a343b5d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4ca38f913113fd3b4436cd3a247e22b06ff34e7c")]
 [assembly: System.Reflection.AssemblyProductAttribute("BaayuLok.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BaayuLok.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

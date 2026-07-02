@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { ArrowRight, ShieldCheck, FileText, HandCoins, Play, Megaphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CampaignCard } from "@/components/site/campaign-card";
-import { campaignsApi, categoriesApi, statsApi, type CampaignData, type CategoryData, type PlatformStats } from "@/lib/api";
+import { campaignsApi, categoriesApi, statsApi, resolveImageUrl, type CampaignData, type CategoryData, type PlatformStats } from "@/lib/api";
 import heroOrbit from "@/assets/hero-orbit.jpg";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -238,7 +238,8 @@ function CategoriesSection({ categories }: { categories: CategoryData[] }) {
             transition={{ delay: i * 0.05, duration: 0.4 }}
           >
             <Link
-              to="/categories"
+              to="/campaign/list"
+              search={{ category: c.name }}
               className="group flex h-full flex-col items-center justify-center rounded-2xl border border-border/60 bg-card p-6 text-center transition hover:-translate-y-1 hover:border-primary hover:shadow-lg"
             >
               <div className="text-4xl">{c.emoji}</div>
@@ -321,7 +322,7 @@ function AppPromo({ campaigns, stats }: { campaigns: CampaignData[]; stats: Plat
                   <div key={c.slug} className="rounded-xl bg-secondary p-2">
                     <div className="h-12 w-full overflow-hidden rounded bg-secondary/50 flex items-center justify-center text-xs text-muted-foreground">
                       {c.coverImage ? (
-                        <img src={c.coverImage} alt="" className="h-full w-full object-cover" />
+                        <img src={resolveImageUrl(c.coverImage)} alt="" className="h-full w-full object-cover" />
                       ) : "No image"}
                     </div>
                     <p className="mt-1 line-clamp-2 text-[10px] font-medium">{c.title}</p>

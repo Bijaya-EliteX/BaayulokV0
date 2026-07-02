@@ -22,7 +22,9 @@ public class UploadController : ControllerBase
             return BadRequest(ApiResponse<object>.Fail("No file provided"));
 
         using var stream = file.OpenReadStream();
-        var url = await _upload.UploadAsync(stream, file.FileName, file.ContentType);
+        var path = await _upload.UploadAsync(stream, file.FileName, file.ContentType);
+        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        var url = $"{baseUrl}{path}";
 
         return Ok(ApiResponse<object>.Ok(new { url }, "File uploaded"));
     }

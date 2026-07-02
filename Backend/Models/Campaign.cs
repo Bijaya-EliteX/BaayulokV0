@@ -57,6 +57,7 @@ public class Campaign
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+    public ICollection<CampaignImage> Images { get; set; } = new List<CampaignImage>();
     public ICollection<CampaignDocument> Documents { get; set; } = new List<CampaignDocument>();
     public ICollection<Donation> Donations { get; set; } = new List<Donation>();
 }

@@ -23,7 +23,16 @@ public record CampaignResponse(
     string? RejectionReason,
     string CreatorName,
     DateTime CreatedAt,
-    DateTime UpdatedAt
+    DateTime UpdatedAt,
+    List<string> Images,
+    List<DocumentInfo> Documents
+);
+
+public record DocumentInfo(
+    Guid Id,
+    string DocumentType,
+    string FileUrl,
+    string FileName
 );
 
 public record CampaignListRequest(
@@ -44,7 +53,10 @@ public record CreateCampaignRequest(
     string Relationship,
     string Hospital,
     string Story,
-    string? CoverImage
+    List<string> CoverImages,
+    string CitizenshipUrl,
+    string HospitalLetterUrl,
+    List<string>? MedicalBillsUrls
 );
 
 public record UpdateCampaignRequest(

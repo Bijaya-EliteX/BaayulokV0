@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { adminApi, formatNpr, type AdminCampaign, getStoredUser } from "@/lib/api";
+import { adminApi, formatNpr, resolveImageUrl, type AdminCampaign, getStoredUser } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Check, X, Loader2 } from "lucide-react";
 
@@ -69,7 +69,7 @@ function Page() {
         <div className="space-y-4">
           {list.map(c => (
             <div key={c.slug} className="grid gap-4 rounded-2xl border border-border bg-card p-5 md:grid-cols-[160px_1fr_auto]">
-              {c.coverImage && <img src={c.coverImage} alt="" className="h-28 w-full rounded-lg object-cover" />}
+              {c.coverImage && <img src={resolveImageUrl(c.coverImage)} alt="" className="h-28 w-full rounded-lg object-cover" />}
               <div>
                 <h3 className="font-display text-lg font-bold">{c.title}</h3>
                 <p className="text-sm text-muted-foreground">By {c.creatorName} · {c.location}</p>

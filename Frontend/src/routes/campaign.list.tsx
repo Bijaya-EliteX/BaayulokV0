@@ -1,4 +1,4 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect, useSearch } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
 import { Search, Loader2 } from "lucide-react";
 import { campaignsApi, categoriesApi, type CampaignData, type CategoryData, getStoredUser } from "@/lib/api";
@@ -6,6 +6,9 @@ import { CampaignCard } from "@/components/site/campaign-card";
 import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/campaign/list")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    category: typeof search.category === "string" ? search.category : undefined,
+  }),
   beforeLoad: () => {
     if (!getStoredUser()) {
       sessionStorage.setItem("openAuthModal", "1");
@@ -17,8 +20,9 @@ export const Route = createFileRoute("/campaign/list")({
 });
 
 function Page() {
+  const { category: initialCategory } = useSearch({ from: Route.id });
   const [q, setQ] = useState("");
-  const [cat, setCat] = useState<string>("All");
+  const [cat, setCat] = useState<string>(initialCategory ?? "All");
   const [campaigns, setCampaigns] = useState<CampaignData[]>([]);
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);

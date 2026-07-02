@@ -36,7 +36,7 @@ function Page() {
     <div className="mx-auto max-w-7xl px-4 py-16 md:px-6">
       <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-7">
         {categories.map((c) => (
-          <Link key={c.name} to="/campaign/list" className="rounded-2xl border border-border bg-card p-6 text-center hover:border-primary hover:shadow-md transition">
+          <Link key={c.name} to="/campaign/list" search={{ category: c.name }} className="rounded-2xl border border-border bg-card p-6 text-center hover:border-primary hover:shadow-md transition">
             <div className="text-4xl">{c.emoji}</div>
             <p className="mt-3 font-display text-sm font-semibold">{c.name}</p>
             <p className="text-xs text-muted-foreground">{c.campaignCount} campaigns</p>
