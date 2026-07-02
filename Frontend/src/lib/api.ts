@@ -414,6 +414,10 @@ export const adminApi = {
       body: JSON.stringify({ reason }),
     }),
   stats: () => request<ApiResult<PlatformStats>>("/admin/stats"),
+  delete: (slug: string) =>
+    request<ApiResult<object>>(`/admin/campaigns/${slug}`, {
+      method: "DELETE",
+    }),
 };
 
 // --- Stats API ---

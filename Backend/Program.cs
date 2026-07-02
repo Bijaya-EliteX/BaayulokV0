@@ -1,10 +1,34 @@
 using System.Text;
+using System.Net.NetworkInformation;
+using System.Diagnostics;
 using BaayuLok.API.Data;
 using BaayuLok.API.Middleware;
 using BaayuLok.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+
+var targetPort = 5157;
+var existing = IPGlobalProperties.GetIPGlobalProperties()
+    .GetActiveTcpListeners()
+    .FirstOrDefault(e => e.Port == targetPort);
+if (existing is not null)
+{
+    using var proc = new Process
+    {
+        StartInfo = new ProcessStartInfo
+        {
+            FileName = "fuser",
+            ArgumentList = { "-k", $"{targetPort}/tcp" },
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+        }
+    };
+    proc.Start();
+    proc.WaitForExit(3000);
+    Thread.Sleep(500);
+}
 
 var builder = WebApplication.CreateBuilder(args);
 

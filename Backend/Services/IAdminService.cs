@@ -8,4 +8,5 @@ public interface IAdminService
     Task<AdminCampaignResponse> ApproveCampaignAsync(string slug);
     Task<AdminCampaignResponse> RejectCampaignAsync(string slug, string reason);
     Task<PlatformStatsResponse> GetPlatformStatsAsync();
+    Task DeleteCampaignAsync(string slug);
 }

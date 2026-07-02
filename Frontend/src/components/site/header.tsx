@@ -7,7 +7,6 @@ import { useAuthModal } from "@/hooks/use-auth-modal";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard" },
-  { to: "/categories", label: "Donate" },
   { to: "/campaign/list", label: "Campaigns" },
   { to: "/profile", label: "Profile" },
 ];

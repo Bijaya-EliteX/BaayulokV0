@@ -75,6 +75,20 @@ public class AdminService : IAdminService
         return MapToAdminResponse(campaign);
     }
 
+    public async Task DeleteCampaignAsync(string slug)
+    {
+        var campaign = await _db.Campaigns
+            .Include(c => c.Images)
+            .Include(c => c.Documents)
+            .FirstOrDefaultAsync(c => c.Slug == slug)
+            ?? throw new KeyNotFoundException("Campaign not found");
+
+        _db.CampaignImages.RemoveRange(campaign.Images);
+        _db.CampaignDocuments.RemoveRange(campaign.Documents);
+        _db.Campaigns.Remove(campaign);
+        await _db.SaveChangesAsync();
+    }
+
     public async Task<PlatformStatsResponse> GetPlatformStatsAsync()
     {
         var totalCampaigns = await _db.Campaigns.CountAsync();

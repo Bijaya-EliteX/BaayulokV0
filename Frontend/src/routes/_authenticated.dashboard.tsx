@@ -4,7 +4,7 @@ import { usersApi, adminApi, formatNpr, resolveImageUrl, type UserCampaign, type
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
-import { Loader2, Check, X, ShieldCheck, TrendingUp, Users, Wallet } from "lucide-react";
+import { Loader2, Check, X, Trash2, ShieldCheck, TrendingUp, Users, Wallet } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — BaayuLok" }] }),
@@ -131,6 +131,16 @@ function AdminDashboard() {
     setActionLoading(null);
   };
 
+  const handleDelete = async (slug: string) => {
+    if (!confirm("Delete this campaign permanently?")) return;
+    setActionLoading(slug);
+    try {
+      await adminApi.delete(slug);
+      fetchList();
+    } catch {}
+    setActionLoading(null);
+  };
+
   if (loading) return <div className="mt-20 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
 
   const tabs = ["Pending", "Active", "Rejected"] as const;
@@ -180,8 +190,20 @@ function AdminDashboard() {
                       <X className="mr-1 h-4 w-4" />Reject
                     </Button>
                   </>}
-                  {tab === "Active" && <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">Active</span>}
-                  {tab === "Rejected" && <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">Rejected</span>}
+                  {tab === "Active" && <>
+                    <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">Active</span>
+                    <Button size="sm" variant="destructive" onClick={() => handleDelete(c.slug)} disabled={actionLoading === c.slug}>
+                      {actionLoading === c.slug ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Trash2 className="mr-1 h-4 w-4" />}
+                      Delete
+                    </Button>
+                  </>}
+                  {tab === "Rejected" && <>
+                    <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">Rejected</span>
+                    <Button size="sm" variant="destructive" onClick={() => handleDelete(c.slug)} disabled={actionLoading === c.slug}>
+                      {actionLoading === c.slug ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Trash2 className="mr-1 h-4 w-4" />}
+                      Delete
+                    </Button>
+                  </>}
                 </div>
               </div>
             ))}

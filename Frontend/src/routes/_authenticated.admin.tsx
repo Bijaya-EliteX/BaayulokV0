@@ -2,7 +2,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { adminApi, formatNpr, resolveImageUrl, type AdminCampaign, getStoredUser } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { Check, X, Loader2 } from "lucide-react";
+import { Check, X, Trash2, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: () => {
@@ -51,6 +51,16 @@ function Page() {
     setActionLoading(null);
   };
 
+  const handleDelete = async (slug: string) => {
+    if (!confirm("Delete this campaign permanently?")) return;
+    setActionLoading(slug);
+    try {
+      await adminApi.delete(slug);
+      fetchList();
+    } catch {}
+    setActionLoading(null);
+  };
+
   const tabs = ["Pending", "Active", "Rejected"] as const;
 
   return (
@@ -86,8 +96,20 @@ function Page() {
                     <X className="mr-1 h-4 w-4" />Reject
                   </Button>
                 </>}
-                {tab === "Active" && <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">Active</span>}
-                {tab === "Rejected" && <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">Rejected</span>}
+                {tab === "Active" && <>
+                  <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">Active</span>
+                  <Button size="sm" variant="destructive" onClick={() => handleDelete(c.slug)} disabled={actionLoading === c.slug}>
+                    {actionLoading === c.slug ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Trash2 className="mr-1 h-4 w-4" />}
+                    Delete
+                  </Button>
+                </>}
+                {tab === "Rejected" && <>
+                  <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">Rejected</span>
+                  <Button size="sm" variant="destructive" onClick={() => handleDelete(c.slug)} disabled={actionLoading === c.slug}>
+                    {actionLoading === c.slug ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Trash2 className="mr-1 h-4 w-4" />}
+                    Delete
+                  </Button>
+                </>}
               </div>
             </div>
           ))}

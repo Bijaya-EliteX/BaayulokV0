@@ -36,6 +36,13 @@ public class AdminController : ControllerBase
         return Ok(ApiResponse<AdminCampaignResponse>.Ok(result, "Campaign rejected"));
     }
 
+    [HttpDelete("campaigns/{slug}")]
+    public async Task<IActionResult> DeleteCampaign(string slug)
+    {
+        await _admin.DeleteCampaignAsync(slug);
+        return Ok(ApiResponse<object>.Ok(new { }, "Campaign deleted"));
+    }
+
     [HttpGet("stats")]
     public async Task<IActionResult> GetStats()
     {
